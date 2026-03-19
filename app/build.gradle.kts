@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -59,4 +61,18 @@ dependencies {
 
     //Material Extended Icons
     implementation(libs.androidx.compose.material.icons.extended.android)
+
+    //Dagger Hilt dependency
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    //Supabase dependency
+    implementation(platform(libs.bom))
+    implementation(libs.postgrest.kt)
+    implementation(libs.auth.kt)
+    implementation(libs.realtime.kt)
+
+    //Ktor dependency
+    implementation(libs.ktor.client.engine.z)
+
 }
