@@ -22,14 +22,11 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,21 +36,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anucodes.connecto.R
+import com.anucodes.connecto.core.authentication.models.LogInRequest
+import com.anucodes.connecto.core.authentication.viewmodel.AuthViewModel
 import com.anucodes.connecto.ui.theme.AppColors
-import com.anucodes.connecto.ui.theme.ConnectoTheme
 
 
 @Composable
-fun LogInScreen() {
+fun LogInScreen(
+    authViewModel: AuthViewModel
+) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -258,7 +256,13 @@ fun LogInScreen() {
                     containerColor = if (darkTheme) AppColors.ButtonPrimary else AppColors.ButtonSecondary,
                     contentColor = if (darkTheme) AppColors.FontPrimaryDark else AppColors.FontPrimaryLight
                 ),
-                onClick = {}
+                onClick = {
+                    val logInRequest = LogInRequest(
+                        email = email,
+                        password = password
+                    )
+                    authViewModel.signInWithEmailAndPassword(logInRequest)
+                }
             ) {
                 Text(
                     text = "Log In!",

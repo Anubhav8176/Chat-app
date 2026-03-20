@@ -33,11 +33,15 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.anucodes.connecto.core.authentication.models.UserInfo
+import com.anucodes.connecto.core.authentication.viewmodel.AuthViewModel
 import com.anucodes.connecto.ui.theme.AppColors
 
 
 @Composable
-fun SignUpScreen() {
+fun SignUpScreen(
+    authViewModel: AuthViewModel
+) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -215,7 +219,14 @@ fun SignUpScreen() {
                     containerColor = if (darkTheme) AppColors.ButtonPrimary else AppColors.ButtonSecondary,
                     contentColor = if (darkTheme) AppColors.FontPrimaryDark else AppColors.FontPrimaryLight
                 ),
-                onClick = {}
+                onClick = {
+                    val userInfo = UserInfo(
+                        name = name,
+                        username = "",
+                        email = email
+                    )
+                    authViewModel.createUserUsingEmailAndPassword(userInfo = userInfo, userPassword = password)
+                }
             ) {
                 Text(
                     text = "Register!",
