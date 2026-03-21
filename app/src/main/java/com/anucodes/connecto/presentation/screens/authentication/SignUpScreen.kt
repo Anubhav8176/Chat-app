@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
@@ -62,7 +63,9 @@ fun SignUpScreen(
 
     when(authState){
         is AuthState.Success->{
-            navController.navigate("login_screen")
+            navController.navigate("login_screen"){
+                popUpTo(0){inclusive=true}
+            }
             authViewModel.updateAuthState()
             Toast.makeText(LocalContext.current, "Confirmation email sent!", Toast.LENGTH_SHORT).show()
         }
@@ -160,7 +163,7 @@ fun SignUpScreen(
                 },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Person,
+                        imageVector = Icons.Default.Email,
                         contentDescription = "Password",
                         tint = fontColor
                     )

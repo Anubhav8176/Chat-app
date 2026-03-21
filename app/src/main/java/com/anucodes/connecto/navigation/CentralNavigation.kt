@@ -1,6 +1,5 @@
 package com.anucodes.connecto.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavHostController
@@ -22,10 +21,8 @@ fun CentralNavigation(
     val currentUser = authViewModel.currentUser.collectAsState()
 
     val startGraph = if (currentUser.value==null) {
-        Log.i("Current User: ", "User $currentUser")
         "auth_graph"
     } else {
-        Log.i("Current User: ", "User $currentUser")
         "home_graph"
     }
 

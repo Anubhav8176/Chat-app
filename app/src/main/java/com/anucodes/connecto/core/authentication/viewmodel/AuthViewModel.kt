@@ -36,8 +36,8 @@ class AuthViewModel @Inject constructor(
     }
 
     fun createUserUsingEmailAndPassword(userInfo: UserInfo, userPassword: String){
+        _authState.value = AuthState.Loading
         viewModelScope.launch {
-            _authState.value = AuthState.Loading
             try {
                 val user = supabaseAuth.signUpWith(Email){
                     email = userInfo.email
@@ -57,6 +57,7 @@ class AuthViewModel @Inject constructor(
     }
 
     fun signInWithEmailAndPassword(logInRequest: LogInRequest){
+        _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
                 val user = supabaseAuth.signInWith(Email){
@@ -77,6 +78,7 @@ class AuthViewModel @Inject constructor(
                     }
                 }
             }catch (e: Exception){
+                _authState.value = AuthState.Failure(e.message.toString())
                 Log.e(TAG, "Failed to login using email and password because ${e.message}")
             }
         }
@@ -90,6 +92,7 @@ class AuthViewModel @Inject constructor(
     fun signOutCurrentUser(){
         viewModelScope.launch {
             supabaseAuth.signOut()
+            updateAuthState()
         }
     }
 
@@ -107,7 +110,5 @@ class AuthViewModel @Inject constructor(
         }else{
             _currentUser.value = null
         }
-
-        Log.i(TAG, "UserInfo => ${_currentUser.value}")
     }
 }
