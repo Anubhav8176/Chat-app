@@ -4,16 +4,22 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.anucodes.connecto.core.authentication.viewmodel.AuthViewModel
 import com.anucodes.connecto.ui.theme.AppColors
 
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    navController: NavHostController,
+    authViewModel: AuthViewModel
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -26,5 +32,18 @@ fun HomeScreen() {
             fontSize = 30.sp,
             color = AppColors.FontPrimaryDark
         )
+
+        Button(
+            onClick = {
+                authViewModel.signOutCurrentUser()
+                navController.navigate("auth_graph")
+            }
+        ) {
+            Text(
+                text = "Sign Out!",
+                fontSize = 20.sp,
+                color = AppColors.FontPrimaryDark
+            )
+        }
     }
 }

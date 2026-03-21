@@ -1,7 +1,9 @@
 package com.anucodes.connecto.presentation.screens.authentication
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -42,7 +46,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.anucodes.connecto.R
+import com.anucodes.connecto.core.authentication.models.AuthState
 import com.anucodes.connecto.core.authentication.models.LogInRequest
 import com.anucodes.connecto.core.authentication.viewmodel.AuthViewModel
 import com.anucodes.connecto.ui.theme.AppColors
@@ -50,7 +56,8 @@ import com.anucodes.connecto.ui.theme.AppColors
 
 @Composable
 fun LogInScreen(
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    navController: NavHostController
 ) {
 
     var email by remember { mutableStateOf("") }
@@ -60,6 +67,25 @@ fun LogInScreen(
     val fontColor = if (isSystemInDarkTheme()) AppColors.FontPrimaryDark else AppColors.FontPrimaryLight
     val authBg = if(isSystemInDarkTheme()) AppColors.AuthBgDark else AppColors.AuthBg
     val darkTheme = isSystemInDarkTheme()
+
+    val authState by authViewModel.authState.collectAsState()
+
+    when(authState){
+        is AuthState.Success->{
+            navController.navigate("home_screen")
+            authViewModel.updateAuthState()
+        }
+        is AuthState.Failure->{
+            Toast.makeText(LocalContext.current, "Failed to authenticate", Toast.LENGTH_SHORT).show()
+            authViewModel.updateAuthState()
+        }
+        is AuthState.Loading->{
+
+        }
+        is AuthState.Idle->{
+
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -238,6 +264,18 @@ fun LogInScreen(
                 shape = RoundedCornerShape(20.dp)
             )
 
+            Text(
+                modifier = Modifier
+                    .clickable(
+                        onClick = {
+                            navController.navigate("create_user_screen")
+                        }
+                    ),
+                text = "New user? Create account",
+                fontSize = 15.sp,
+                color = fontColor
+            )
+
         }
 
         Spacer(modifier = Modifier.height(100.dp))
@@ -249,6 +287,7 @@ fun LogInScreen(
         ) {
 
             Button(
+                enabled = if (email.isNotEmpty() && password.isNotEmpty()) true else false,
                 modifier = Modifier
                     .fillMaxWidth(0.8f),
                 shape = RoundedCornerShape(12.dp),

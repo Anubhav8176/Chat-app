@@ -11,6 +11,9 @@ activityCompose = "1.13.0"
 kotlin = "2.3.20"
 composeBom = "2026.03.00"
 materialIconsExtendedAndroid = "1.7.8"
+navigation3Runtime = "1.1.0-beta01"
+navigation3Ui = "1.1.0-beta01"
+navigationCompose = "2.9.7"
 uiTextGoogleFonts = "1.10.5"
 ksp = "2.0.21-1.0.28"
 hilt = "2.59.2"
@@ -19,6 +22,9 @@ hilt = "2.59.2"
 androidx-compose-material-icons-extended-android = { module = "androidx.compose.material:material-icons-extended-android", version.ref = "materialIconsExtendedAndroid" }
 androidx-compose-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3Ui" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3Runtime" }
 auth-kt = { module = "io.github.jan-tennert.supabase:auth-kt" }
 bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "bom" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

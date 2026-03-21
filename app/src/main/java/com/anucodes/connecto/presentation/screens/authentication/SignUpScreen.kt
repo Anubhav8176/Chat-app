@@ -1,5 +1,6 @@
 package com.anucodes.connecto.presentation.screens.authentication
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -21,18 +22,22 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.anucodes.connecto.core.authentication.models.AuthState
 import com.anucodes.connecto.core.authentication.models.UserInfo
 import com.anucodes.connecto.core.authentication.viewmodel.AuthViewModel
 import com.anucodes.connecto.ui.theme.AppColors
@@ -40,7 +45,8 @@ import com.anucodes.connecto.ui.theme.AppColors
 
 @Composable
 fun SignUpScreen(
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    navController: NavHostController
 ) {
 
     var email by remember { mutableStateOf("") }
@@ -51,6 +57,22 @@ fun SignUpScreen(
     val fontColor = if (isSystemInDarkTheme()) AppColors.FontPrimaryDark else AppColors.FontPrimaryLight
     val authBg = if(isSystemInDarkTheme()) AppColors.AuthBgDark else AppColors.AuthBg
     val darkTheme = isSystemInDarkTheme()
+
+    val authState by authViewModel.authState.collectAsState()
+
+    when(authState){
+        is AuthState.Success->{
+            navController.navigate("login_screen")
+            authViewModel.updateAuthState()
+            Toast.makeText(LocalContext.current, "Confirmation email sent!", Toast.LENGTH_SHORT).show()
+        }
+        is AuthState.Failure->{
+            Toast.makeText(LocalContext.current, (authState as AuthState.Failure).message, Toast.LENGTH_SHORT).show()
+            authViewModel.updateAuthState()
+        }
+        is AuthState.Idle->{}
+        is AuthState.Loading->{}
+    }
 
     Column(
         modifier = Modifier
@@ -212,6 +234,7 @@ fun SignUpScreen(
         ) {
 
             Button(
+                enabled = if (email.isNotEmpty() && password.isNotEmpty() && name.isNotEmpty()) true else false,
                 modifier = Modifier
                     .fillMaxWidth(0.8f),
                 shape = RoundedCornerShape(12.dp),
