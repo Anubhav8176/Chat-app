@@ -1,6 +1,8 @@
 package com.anucodes.connecto.presentation.screens.authentication
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +46,7 @@ import com.anucodes.connecto.core.authentication.viewmodel.AuthViewModel
 import com.anucodes.connecto.ui.theme.AppColors
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SignUpScreen(
     authViewModel: AuthViewModel,
@@ -248,7 +251,6 @@ fun SignUpScreen(
                 onClick = {
                     val userInfo = UserInfo(
                         name = name,
-                        username = "",
                         email = email
                     )
                     authViewModel.createUserUsingEmailAndPassword(userInfo = userInfo, userPassword = password)

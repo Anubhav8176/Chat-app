@@ -1,26 +1,32 @@
 package com.anucodes.connecto.core.authentication.viewmodel
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anucodes.connecto.core.authentication.models.AuthState
 import com.anucodes.connecto.core.authentication.models.LogInRequest
 import com.anucodes.connecto.core.authentication.models.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
+import io.github.jan.supabase.postgrest.from
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val supabaseAuth: Auth
+    private val supabaseAuth: Auth,
+    private val supabase: SupabaseClient
 ): ViewModel() {
     val TAG = "Authentication:"
 
@@ -35,6 +41,7 @@ class AuthViewModel @Inject constructor(
         getCurrentUserInfo()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun createUserUsingEmailAndPassword(userInfo: UserInfo, userPassword: String){
         _authState.value = AuthState.Loading
         viewModelScope.launch {
@@ -44,10 +51,20 @@ class AuthViewModel @Inject constructor(
                     password = userPassword
                     data = buildJsonObject {
                         put("name", userInfo.name)
-                        put("username", userInfo.username)
+                        put("username", userInfo.email.substringBefore("@"))
                     }
                 }
-                _authState.value = AuthState.Success
+
+                if (user != null){
+                    val userInfo = UserInfo(
+                        name = user.userMetadata?.get("name")?.jsonPrimitive?.content ?: "",
+                        username = user.userMetadata?.get("username")?.jsonPrimitive?.content ?: "",
+                        email = user.userMetadata?.get("email")?.jsonPrimitive?.content ?: ""
+                    )
+                    supabase.from("User").insert(userInfo)
+                    _authState.value = AuthState.Success
+                }
+
 
             }catch (e: Exception){
                 _authState.value = AuthState.Failure("Can't authenticate ")
@@ -68,6 +85,7 @@ class AuthViewModel @Inject constructor(
                     when(authRes){
                         is SessionStatus.Authenticated->{
                             _authState.value = AuthState.Success
+                            getCurrentUserInfo()
                         }
                         is SessionStatus.NotAuthenticated->{
                             _authState.value = AuthState.Failure("Please confirm the email to login!")

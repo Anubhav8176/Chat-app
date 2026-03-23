@@ -271,6 +271,8 @@ fun LogInScreen(
                     shape = RoundedCornerShape(20.dp)
                 )
 
+                Spacer(modifier = Modifier.height(10.dp))
+
                 Text(
                     modifier = Modifier
                         .clickable(

@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.createSupabaseClient
@@ -27,5 +28,9 @@ class AppModule{
     @Provides
     @Singleton
     fun providesSupabaseAuth(): Auth = supabase.auth
+
+    @Provides
+    @Singleton
+    fun providesSupabase(): SupabaseClient = supabase
 
 }
