@@ -92,4 +92,7 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation.compose)
 
+    //Coil dependency
+    implementation(libs.coil.compose)
+
 }

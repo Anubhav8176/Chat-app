@@ -1,8 +1,6 @@
 package com.anucodes.connecto.core.authentication.viewmodel
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anucodes.connecto.core.authentication.models.AuthState
@@ -13,12 +11,13 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
-import io.github.jan.supabase.postgrest.from
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
@@ -41,91 +40,86 @@ class AuthViewModel @Inject constructor(
         getCurrentUserInfo()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun createUserUsingEmailAndPassword(userInfo: UserInfo, userPassword: String){
+    fun createUserUsingEmailAndPassword(userInfo: UserInfo, userPassword: String) {
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
-                val user = supabaseAuth.signUpWith(Email){
+                supabaseAuth.signUpWith(Email) {
                     email = userInfo.email
                     password = userPassword
                     data = buildJsonObject {
                         put("name", userInfo.name)
                         put("username", userInfo.email.substringBefore("@"))
+                        put("avatar_url", userInfo.profilePictureUrl ?: "")
                     }
                 }
 
-                if (user != null){
-                    val userInfo = UserInfo(
-                        name = user.userMetadata?.get("name")?.jsonPrimitive?.content ?: "",
-                        username = user.userMetadata?.get("username")?.jsonPrimitive?.content ?: "",
-                        email = user.userMetadata?.get("email")?.jsonPrimitive?.content ?: ""
-                    )
-                    supabase.from("User").insert(userInfo)
-                    _authState.value = AuthState.Success
-                }
+                _authState.value = AuthState.Success
 
-
-            }catch (e: Exception){
-                _authState.value = AuthState.Failure("Can't authenticate ")
-                Log.e(TAG, "Failed to creating using email and password because ${e.message}")
+            } catch (e: Exception) {
+                _authState.value = AuthState.Failure("Signup failed. Please try again.")
+                Log.e(TAG, "Signup failed: ${e.message}")
             }
         }
     }
 
-    fun signInWithEmailAndPassword(logInRequest: LogInRequest){
+    fun signInWithEmailAndPassword(logInRequest: LogInRequest) {
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
-                val user = supabaseAuth.signInWith(Email){
+                supabaseAuth.signInWith(Email) {
                     email = logInRequest.email
                     password = logInRequest.password
                 }
-                supabaseAuth.sessionStatus.collect {authRes->
-                    when(authRes){
-                        is SessionStatus.Authenticated->{
-                            _authState.value = AuthState.Success
-                            getCurrentUserInfo()
-                        }
-                        is SessionStatus.NotAuthenticated->{
-                            _authState.value = AuthState.Failure("Please confirm the email to login!")
-                        }
-                        else -> {
-                            _authState.value = AuthState.Failure("Couldn't authenticate user.")
-                        }
+                val session = supabaseAuth.sessionStatus.first {
+                    it is SessionStatus.Authenticated || it is SessionStatus.NotAuthenticated
+                }
+                when (session) {
+                    is SessionStatus.Authenticated -> {
+                        getCurrentUserInfo()
+                        _authState.value = AuthState.Success
+                    }
+                    is SessionStatus.NotAuthenticated -> {
+                        _authState.value = AuthState.Failure("Please confirm your email to login!")
+                    }
+                    else -> {
+                        _authState.value = AuthState.Failure("Couldn't authenticate user.")
                     }
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _authState.value = AuthState.Failure(e.message.toString())
-                Log.e(TAG, "Failed to login using email and password because ${e.message}")
+                Log.e(TAG, "Failed to login: ${e.message}")
             }
         }
-
     }
 
     fun updateAuthState(){
         _authState.value = AuthState.Idle
     }
 
-    fun signOutCurrentUser(){
+    fun signOutCurrentUser() {
         viewModelScope.launch {
-            supabaseAuth.signOut()
-            updateAuthState()
+            try {
+                supabaseAuth.signOut()
+                _currentUser.value = null
+                _authState.value = AuthState.Idle
+            } catch (e: Exception) {
+                Log.e(TAG, "Sign out failed: ${e.message}")
+            }
         }
     }
 
-    fun getCurrentUserInfo(){
+    fun getCurrentUserInfo() {
         val userInfoRes = supabaseAuth.currentUserOrNull()
-
-        if (userInfoRes!=null){
+        if (userInfoRes != null) {
+            val metadata = userInfoRes.userMetadata
             val userInfo = UserInfo(
-                name = userInfoRes.userMetadata?.get("name").toString(),
-                username = userInfoRes.userMetadata?.get("username").toString(),
-                email = userInfoRes.userMetadata?.get("email").toString()
+                name     = metadata?.get("name")?.jsonPrimitive?.contentOrNull ?: "",
+                username = metadata?.get("username")?.jsonPrimitive?.contentOrNull ?: "",
+                email    = userInfoRes.email ?: ""
             )
-
             _currentUser.value = userInfo
-        }else{
+        } else {
             _currentUser.value = null
         }
     }
