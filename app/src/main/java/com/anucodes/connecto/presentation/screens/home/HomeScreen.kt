@@ -17,16 +17,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,6 +41,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.anucodes.connecto.R
 import com.anucodes.connecto.core.authentication.viewmodel.AuthViewModel
+import com.anucodes.connecto.presentation.shared.TopHomeBar
 import com.anucodes.connecto.ui.theme.AppColors
 
 
@@ -114,74 +108,6 @@ fun HomeScreen(
 
         }
     }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopHomeBar(
-    imageUrl: String? = ""
-) {
-    TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = AppColors.DarkBg
-        ),
-        title = {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                text = "Home",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White
-            )
-        },
-        navigationIcon = {
-            IconButton(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(
-                        color = AppColors.DarkCard
-                    ),
-                onClick = { }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search",
-                    tint = AppColors.PrimaryLight
-                )
-            }
-        },
-        actions = {
-            Box(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .size(42.dp)
-                    .border(
-                        width = 2.dp,
-                        color = AppColors.Primary,
-                        shape = CircleShape
-                    )
-                    .padding(2.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                AsyncImage(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape),
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(imageUrl)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = "Profile Picture",
-                    contentScale = ContentScale.Crop,
-                    error = painterResource(R.drawable.profile_placeholder),
-                    fallback = painterResource(R.drawable.profile_placeholder),
-                    placeholder = painterResource(R.drawable.profile_placeholder)
-                )
-            }
-        }
-    )
 }
 
 
