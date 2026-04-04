@@ -2,6 +2,7 @@ package com.anucodes.connecto.presentation.shared
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,7 +39,8 @@ import com.anucodes.connecto.ui.theme.AppColors
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopHomeBar(
-    imageUrl: String? = ""
+    imageUrl: String? = "",
+    onProfileClicked: ()-> Unit
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -80,7 +82,10 @@ fun TopHomeBar(
                         color = AppColors.Primary,
                         shape = CircleShape
                     )
-                    .padding(2.dp),
+                    .padding(2.dp)
+                    .clickable(
+                        onClick = onProfileClicked
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(

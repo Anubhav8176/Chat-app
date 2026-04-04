@@ -57,7 +57,10 @@ fun HomeScreen(
 
     Scaffold(
         topBar = { TopHomeBar(
-            imageUrl = currentUser?.profilePictureUrl
+            imageUrl = currentUser?.profilePictureUrl,
+            onProfileClicked = {
+                navController.navigate("user_profile")
+            }
         ) }
     ) {innerPadding->
         Column(

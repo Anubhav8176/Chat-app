@@ -1,16 +1,16 @@
 package com.anucodes.connecto.presentation.screens.authentication
 
-import android.os.Build
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -46,9 +46,9 @@ import com.anucodes.connecto.core.authentication.viewmodel.AuthViewModel
 import com.anucodes.connecto.ui.theme.AppColors
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SignUpScreen(
+    innerPadding: PaddingValues,
     authViewModel: AuthViewModel,
     navController: NavHostController
 ) {
@@ -85,7 +85,8 @@ fun SignUpScreen(
             .fillMaxSize()
             .background(
                 color = authBg
-            ),
+            )
+            .padding(innerPadding),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

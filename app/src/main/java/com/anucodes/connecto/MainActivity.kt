@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.material3.Scaffold
 import androidx.navigation.compose.rememberNavController
 import com.anucodes.connecto.core.authentication.viewmodel.AuthViewModel
 import com.anucodes.connecto.navigation.CentralNavigation
@@ -25,10 +26,13 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             ConnectoTheme {
-                CentralNavigation(
-                    authViewModel = authViewModel,
-                    navController = navController
-                )
+                Scaffold{innerPadding->
+                    CentralNavigation(
+                        innerPadding = innerPadding,
+                        authViewModel = authViewModel,
+                        navController = navController
+                    )
+                }
             }
         }
     }
